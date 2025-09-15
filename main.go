@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/lpernett/godotenv"
 )
 
 type Company struct {
@@ -70,6 +72,7 @@ func main() {
 }
 
 func initEnvVariables() {
+	godotenv.Load()
 	app_id = os.Getenv("ADZUNA_APP_ID")
 	app_key = os.Getenv("ADZUNA_APP_KEY")
 
