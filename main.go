@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -28,21 +29,27 @@ const (
 	CountryAU TCountry = "au"
 )
 
+var (
+	app_id  string
+	app_key string
+)
+
 const (
 	clienttime_out = 20 * time.Second
-	app_id         = "7b272609"
-	app_key        = "36ddf2c24ea04d56ffb97730e2b5a188"
 	base_url       = "http://api.adzuna.com/v1/api/"
 )
 
 func main() {
+
+	initEnvVariables()
+
 	client := &http.Client{
 		Timeout: clienttime_out,
 	}
 
 	resp, err := getTopCompanies(*client, CountryGB)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s", err.Error())
 	}
 	topCompanies, err := json.MarshalIndent(resp, " ", " ")
 	if err != nil {
@@ -52,7 +59,7 @@ func main() {
 
 	respCategories, err := getCategories(*client, CountryGB)
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatalf("%s", err.Error())
 	}
 	categories, err := json.MarshalIndent(respCategories, " ", " ")
 	if err != nil {
@@ -60,6 +67,15 @@ func main() {
 	}
 	log.Println(string(categories))
 
+}
+
+func initEnvVariables() {
+	app_id = os.Getenv("ADZUNA_APP_ID")
+	app_key = os.Getenv("ADZUNA_APP_KEY")
+
+	if app_id == "" || app_key == "" {
+		log.Fatal("ADZUNA_APP_ID and ADZUNA_APP_KEY environment variables must be set")
+	}
 }
 
 type TopCompoaniesResponse struct {
